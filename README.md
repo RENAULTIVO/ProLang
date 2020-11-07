@@ -7,8 +7,6 @@
 
 ## Platform compiled code
 
-
-
 Platform | Generated Code
 -------- | --------------
 AVR|AVR Assembly
@@ -18,20 +16,30 @@ Desktop|Binary Code
 
 ## Work ahead
 
-### AVR
+### General resources
+- [x] Define and use variables
+- [x] Concatenate variables and data
+
+## AVR
 - [ ] Control and set ports
 - [ ] Read ports and flags
-- [ ] Access data from RAM and FLASH
 - [ ] Delay functions
 
-### Web
-- [ ] Variables and memory management
+## Web
 - [ ] Print text
 - [ ] Read values from mouse/keyboard
 - [ ] Create screen elements and CSSObject styles
 
-### Desktop
-- [ ] Variables and memory management
+## Desktop
+### Windows
+- [ ] Print text
+- [ ] Read values from keyboard
+
+### Linux
+- [ ] Print text
+- [ ] Read values from keyboard
+
+### DevOS
 - [ ] Print text
 - [ ] Read values from keyboard
 
