@@ -14,7 +14,13 @@ Web|JavaScript
 Desktop|Binary Code
 [DevOS](https://github.com/renaultivo/DevOS)|Binary Code
 
-## ToDo List
+## Work ahead
+
+### AVR
+- [ ] Control and set ports
+- [ ] Read ports and flags
+- [ ] Access data from RAM and FLASH
+- [ ] Delay functions
 
 ### Web
 - [ ] Variables and memory management
