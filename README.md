@@ -9,6 +9,7 @@
 
 Platform | Generated Code
 -------- | --------------
+AVR|AVR Assembly
 Web|JavaScript
 Desktop|Binary Code
 [DevOS](https://github.com/renaultivo/DevOS)|Binary Code
