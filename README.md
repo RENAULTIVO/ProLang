@@ -11,8 +11,9 @@ Platform | Generated Code
 -------- | --------------
 AVR|AVR Assembly
 Web|JavaScript
-Desktop|Binary Code
-[DevOS](https://github.com/renaultivo/DevOS)|Binary Code
+Desktop|NASM Assembly
+BIOS|NASM Assembly
+Bootloader|NASM Assembly (16bits)
 
 ## Work ahead
 
