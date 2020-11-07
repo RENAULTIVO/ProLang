@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" type="text/css" href="./styles.css">
+    <title>ProLang</title>
+</head>
+<body class="flexBoxAlign columnDirection">
+    <textarea></textarea>
+    <div class="flexBoxAlign rowDirection flexWrap">
+        <div class="flexBoxAlign columnDirection">
+            <label for="newLineIdentifier">New line identifier</label>
+            <select id="newLineIdentifier">
+                <option value="\n">\n</option>
+                <option value=";">;</option>
+            </select>
+        </div>
+        <div class="flexBoxAlign columnDirection">
+            <label for="platform">Platform</label>
+            <select id="platform">
+                <optgroup label="MicroControlers">
+                    <option value="avr">AVR</option>
+                </optgroup>
+                <optgroup label="Web">
+                    <option value="web">Web HTMLElements</option>
+                    <option value="web">Web Canvas</option>
+                </optgroup>
+                <optgroup label="desktop">
+                    <option value="linux" selected>Linux</option>
+                    <option value="windows">Windows</option>
+                    <option value="devos">DevOS</option>
+                </optgroup>
+            </select>
+        </div>
+        <button>Compile</button>
+    </div>
+    <script src="./ProLang.js"></script>
+    <script src="./script.js"></script>
+</body>
+</html>
