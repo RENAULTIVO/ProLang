@@ -185,13 +185,32 @@
             } else if (commandString[i] == '(') {
 
                 let functionName = getFunctionName();
-                
-                i++;
 
+                let functionParams = '';
                 let functionCommands = '';
                 let contextCounter = 0;
 
+                for (; i<commandString.length; i++) {
+
+                    if (commandString[i] == '(') {
+                        contextCounter++;
+                    } else if (commandString[i] == ')') {
+                        contextCounter--;
+                    }
+
+                    functionParams += commandString[i];
+                    
+                    if (contextCounter == 0) {
+                        break;
+                    }
+
+                }
+
+                i--;
+
                 for (; commandString[i] != '{' && i<commandString.length; i++);
+
+                contextCounter = 0;
 
                 for (; i<commandString.length; i++) {
 
@@ -211,6 +230,7 @@
 
                 commandArray.push({
                     name: functionName,
+                    params: ProLang.parseCommand(functionParams.substring(1, functionParams.length-1)),
                     isFunction: true,
                     commands: ProLang.parseCommand(functionCommands.substring(1, functionCommands.length-1))
                 });
