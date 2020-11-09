@@ -9,9 +9,15 @@
     }
 
     ProLang.platforms = {
-        linux: {
-            '$': (command) => {
-
+        microcontrolers: {
+            avr: {    
+            }
+        },
+        desktop: {
+            linux: {
+                'print': (command) => {
+                    console.log(command);
+                }
             }
         }
     }
@@ -75,6 +81,26 @@
 
             i--;
             return variableName;
+
+        }
+
+        function getFunctionName() {
+
+            let name = '';
+
+            for (let j=i-1; j>=0; j--) {
+
+                name = commandString[j] + name;
+                console.log(name)
+
+                if (variableSettings.name.invalidCharacters.indexOf(commandString[j-1]) != -1
+                && operators.indexOf(commandString[j-1]) != -1) {
+                    break;
+                }
+
+            }
+
+            return name;
 
         }
 
@@ -156,6 +182,39 @@
                     value: parseFloat(numberString)
                 });
 
+            } else if (commandString[i] == '(') {
+
+                let functionName = getFunctionName();
+                
+                i++;
+
+                let functionCommands = '';
+                let contextCounter = 0;
+
+                for (; commandString[i] != '{' && i<commandString.length; i++);
+
+                for (; i<commandString.length; i++) {
+
+                    if (commandString[i] == '{') {
+                        contextCounter++;
+                    } else if (commandString[i] == '}') {
+                        contextCounter--;
+                    }
+
+                    functionCommands += commandString[i];
+                    
+                    if (contextCounter == 0) {
+                        break;
+                    }
+
+                }
+
+                commandArray.push({
+                    name: functionName,
+                    isFunction: true,
+                    commands: ProLang.parseCommand(functionCommands.substring(1, functionCommands.length-1))
+                });
+
             }
 
         }
@@ -227,11 +286,45 @@
         let commandList = new Array();
         ProLang.data.variables = new Object();
 
-        string.trim().split(ProLang.newLineOn).forEach((commandLine) => {
-            let command = ProLang.parseCommand(commandLine.trim());
+        let commands = string.trim().split(';');
+
+
+        for (let i=0; i<commands.length; i++) {
+
+            let currentString = commands[i].trim();
+
+            if (commands[i].indexOf('{') != -1) {
+                
+                i++;
+
+                let contextCounter = 0;
+
+                for (; i<commands.length; i++) {
+
+                    if (commands[i] == '{') {
+                        contextCounter++;
+                    } else if (commands[i] == '}') {
+                        contextCounter--;
+                        if (contextCounter == -1) {
+                            break;
+                        }
+                    }
+
+                    currentString += commands[i];
+
+                }
+               
+                currentString += commands[i];
+               
+            }
+
+            let command = ProLang.parseCommand(currentString);
             ProLang.run([command]);
             commandList.push(command);
-        });
+
+            currentString = '';
+
+        }
 
         console.log(commandList);
 

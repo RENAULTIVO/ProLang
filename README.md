@@ -17,7 +17,7 @@ Bootloader|NASM Assembly (16bits)
 
 ## Work ahead
 
-### General resources
+### Parser resources 
 - [x] Define and use variables
 - [x] Concatenate variables and data
 
