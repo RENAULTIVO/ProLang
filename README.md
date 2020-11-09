@@ -20,6 +20,7 @@ Bootloader|NASM Assembly (16bits)
 ### Parser resources 
 - [x] Define and use variables
 - [x] Concatenate variables and data
+- [x] Declare functions and params
 
 ## AVR
 - [ ] Control and set ports
