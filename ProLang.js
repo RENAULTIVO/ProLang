@@ -1,367 +1,206 @@
 (()=>{
 
-    "use strict";
-
     let ProLang = new Object();
 
-    ProLang.data = {
-        variables: new Object()
-    }
+    let operators = ['>', '<', '>>', '<<', '=', ':', '+', '-', '*', '/', '!', '%'];
+    let invalidNameCharacters = ['\\', ']', '[', '@', '{', '}', '|', '#', '(', ')', ' ', '$', '"', "'", ',', '\n'];
 
-    ProLang.platforms = {
-        microcontrolers: {
-            avr: {    
-            }
-        },
-        desktop: {
-            linux: {
-                'print': (command) => {
-                    console.log(command);
-                }
-            }
-        }
-    }
+    let operatorActions = {
+        '=': 'equal',
+        ':': 'equal',
+    };
 
-    ProLang.compileTo = 'linux';
+    function run() {
+        
 
-    ProLang.setPlatform = (platform) => {
-        ProLang.compileTo = platform;
-    }
-
-    ProLang.newLineOn = ';';
-
-    ProLang.newLineOn = (newLineOn) => {
-
-        if (newLineOn == '\\n') {
-            newLineOn = '\n';
-        }
-
-        ProLang.newLineOn = newLineOn;
 
     }
 
-    ProLang.setVariable = (variable) => {
-        ProLang.data.variables[variable.name] = variable.value;
-    }
+    function parser(string) {
 
-    ProLang.getVariable = (variable) => {
-        return ProLang.data.variables[variable.name];
-    }
-
-    let operators = ['>', '<', '>>', '<<', '=', '+', '-', '*', '/', '!', '%'];
-
-    let variableSettings = {
-        name: {
-            invalidCharacters: ['\\', ']', '[', '@', '{', '}', '|', '#', '(', ')', ' ', '$', '"', "'"]
-        }
-    }
-
-    ProLang.parseCommand = (commandString) => {
-
-        let commandArray = new Array();
-
-        commandString = commandString.split('');
+        string = string.split('');
 
         let i=0;
+        let currentString = '';
+
+        let commandList = new Array();
 
         function getVariableName() {
 
-            let variableName = "";
+            let variableName = '';
 
-            for (;i<commandString.length; i++) {
+            if (string[i] == '$') {
+                i++;
+            }
 
-                if (variableSettings.name.invalidCharacters.indexOf(commandString[i]) != -1
-                || operators.indexOf(commandString[i]) != -1) {
+            for (;i<string.length; i++) {
+
+                if (invalidNameCharacters.indexOf(string[i]) != -1
+                || operators.indexOf(string[i]) != -1) {
                     break;
                 }
 
-                variableName += commandString[i];
+                variableName += string[i];
 
             }
 
-            i--;
             return variableName;
 
         }
 
-        function getFunctionName() {
+        function getString() {
 
-            let name = '';
+            let quotes = string[i];
+            i++;
 
-            for (let j=i-1; j>=0; j--) {
+            let value = '';
 
-                name = commandString[j] + name;
-                console.log(name)
+            for (;i<string.length; i++) {
 
-                if (variableSettings.name.invalidCharacters.indexOf(commandString[j-1]) != -1
-                && operators.indexOf(commandString[j-1]) != -1) {
+                if (string[i] == '\\') {
+                    continue
+                } else if (string[i] == quotes && string[i-1] != '\\') {
+                    break;
+                }
+
+                value += string[i];
+
+            }
+
+            return value;
+
+        }
+
+        function getNumber() {
+
+            let numberString = '';
+
+            for (;i<string.length && !isNaN(parseFloat(string[i], 10)); i++) {
+                numberString += string[i];
+            }
+
+            return parseFloat(numberString, 10);
+
+        }
+
+        function getFunction() {
+
+            let functionData = {
+                name: '',
+                params: '',
+                commands: ''
+            };
+
+            for (; i<string.length && string[i] != '('; i++) {
+
+                if (string[i] == '@') {
+                    continue;
+                }
+
+                functionData.name += string[i];
+
+            }
+
+            i--;
+
+            for (; i<string.length && string[i] != ')'; i++) {
+
+                if (string[i] == '@') {
+                    continue;
+                }
+
+                functionData.params += string[i];
+
+            }
+            
+            for (; i<string.length && string[i] != '{'; i++);
+
+            let contextCounter = 0;
+
+            for (;i<string.length; i++) {
+
+                if (string[i] == '{') {
+                    contextCounter++;
+                } else if (string[i] == '}') {
+                    contextCounter--;
+                }
+
+                functionData.commands += string[i];
+
+                if (contextCounter == -1) {
                     break;
                 }
 
             }
 
-            return name;
+            functionData.params = parser(functionData.params);
+            functionData.commands = parser(functionData.commands);
+
+            return functionData;
 
         }
 
-        for (i=0; i<commandString.length; i++) {
+        for (i=0; i<string.length; i++) {
 
-            if (commandString[i] == '"') {
+            if (string[i] == '$') {
 
-                i++;
-                let string = "";
-
-                for (;i<commandString.length; i++) {
-
-                    if (commandString[i] == "\\") {
-                        continue;
-                    } else if (commandString[i] == '"' && commandString[i-1] != "\\") {
-                        break;
-                    }
-
-                    if (commandString[i] == '$') {
-                        i++;
-                        let variableName = getVariableName();
-                        string += ProLang.getVariable({
-                            name: variableName
-                        });
-                    } else {
-                        string += commandString[i];
-                    }
-
-                }
-
-                commandArray.push({
-                    isString: true,
-                    value: string.trim()
-                });
-
-            } else if (commandString[i] == '$') {
-
-                i++;
-                let variableName = getVariableName();
-
-                commandArray.push({
+                commandList.push({
                     isVariable: true,
-                    name: variableName.trim()
+                    name: getVariableName()
                 });
 
-            } else if (operators.indexOf(commandString[i]) != -1) {
+            } else if (string[i] == '"' || string[i] == "'") {
 
-                let operatorString = "";
+                commandList.push({
+                    isString: true,
+                    value: getString()
+                })
 
-                for (;i<commandString.length; i++) {
+            } else if (operators.indexOf(string[i]) != -1) {
 
-                    if (operators.indexOf(commandString[i]) == -1) {
-                        break;
-                    }
-
-                    operatorString += commandString[i];
-
-                }
-
-                i--;
-
-                commandArray.push({
+                commandList.push({
                     isOperator: true,
-                    operator: operatorString
+                    operator: string[i]
                 });
 
-            } else if (!isNaN(parseFloat(commandString[i]))) {
+            } else if (!isNaN(parseFloat(string[i], 10))) {
 
-                let numberString = "";
-
-                for (;!isNaN(parseFloat(commandString[i])) && i<commandString.length; i++) {
-                    numberString += commandString[i];
-                }
-
-                i--;
-
-                commandArray.push({
+                commandList.push({
                     isNumber: true,
-                    value: parseFloat(numberString)
-                });
+                    value: getNumber()
+                })
 
-            } else if (commandString[i] == '(') {
+            } else if (string[i] == '@') {
 
-                let functionName = getFunctionName();
+                let functionData = getFunction();
 
-                let functionParams = '';
-                let functionCommands = '';
-                let contextCounter = 0;
-
-                for (; i<commandString.length; i++) {
-
-                    if (commandString[i] == '(') {
-                        contextCounter++;
-                    } else if (commandString[i] == ')') {
-                        contextCounter--;
-                    }
-
-                    functionParams += commandString[i];
-                    
-                    if (contextCounter == 0) {
-                        break;
-                    }
-
-                }
-
-                i--;
-
-                for (; commandString[i] != '{' && i<commandString.length; i++);
-
-                contextCounter = 0;
-
-                for (; i<commandString.length; i++) {
-
-                    if (commandString[i] == '{') {
-                        contextCounter++;
-                    } else if (commandString[i] == '}') {
-                        contextCounter--;
-                    }
-
-                    functionCommands += commandString[i];
-                    
-                    if (contextCounter == 0) {
-                        break;
-                    }
-
-                }
-
-                commandArray.push({
-                    name: functionName,
-                    params: ProLang.parseCommand(functionParams.substring(1, functionParams.length-1)),
+                commandList.push({
                     isFunction: true,
-                    commands: ProLang.parseCommand(functionCommands.substring(1, functionCommands.length-1))
+                    name: functionData.name,
+                    params: functionData.params,
+                    commands: functionData.commands
                 });
 
             }
-
-        }
-
-        return commandArray;
-
-    }
-
-    ProLang.run = (comandList) => {
-
-        comandList.forEach((command) => {
-            
-            for (let i=0; i<command.length; i++) {
-
-                if (command[i].isVariable && command[+1].isOperator) {
-
-                    let variableName = command[i].name;
-
-                    if (command[+1].operator == '=') {
-
-                        let valueString = "";
-                        let containsString = false;
-
-                        for (i=i+2; i<command.length; i++) {
-
-                            if (command[i].isVariable) {
-
-                                let value = ProLang.getVariable({ name: command[i].name});
-                                valueString += value;
-
-                                if (typeof value == 'string') {
-                                    containsString = true;
-                                }
-
-                            } else if (command[i].isNumber) {
-                                valueString += command[i].value;
-                            } else if (command[i].isOperator) {
-                                valueString += command[i].operator;
-                            } else if (command[i].isString) {
-                                valueString += command[i].value;
-                                containsString = true;
-                            }
-
-                        }
-
-                        i--;
-
-                        if (!containsString) {
-                            valueString = eval(valueString);
-                        }
-
-                        ProLang.setVariable({
-                            name: variableName,
-                            value: valueString
-                        });
-
-                    }
-
-                }
-
-            }
-
-        });
-
-    }
-
-    ProLang.parser = (string) => {
-
-        let commandList = new Array();
-        ProLang.data.variables = new Object();
-
-        let commands = string.trim().split(';');
-
-
-        for (let i=0; i<commands.length; i++) {
-
-            let currentString = commands[i].trim();
-
-            if (commands[i].indexOf('{') != -1) {
-                
-                i++;
-
-                let contextCounter = 0;
-
-                for (; i<commands.length; i++) {
-
-                    if (commands[i] == '{') {
-                        contextCounter++;
-                    } else if (commands[i] == '}') {
-                        contextCounter--;
-                        if (contextCounter == -1) {
-                            break;
-                        }
-                    }
-
-                    currentString += commands[i];
-
-                }
-               
-                currentString += commands[i];
-               
-            }
-
-            let command = ProLang.parseCommand(currentString);
-            ProLang.run([command]);
-            commandList.push(command);
-
-            currentString = '';
 
         }
 
         console.log(commandList);
+        return commandList;
 
     }
 
     ProLang.compile = (string) => {
-        ProLang.parser(string);
+        parser(string);
     }
 
     window.ProLang = {
-        compile: ProLang.compile,
-        newLineOn: ProLang.newLineOn,
-        setPlatform: ProLang.setPlatform
+        compile: ProLang.compile
     }
 
-    window.getVariables = () => {
-        return ProLang.data
+    window.getParserData = () => {
+        return ProLang.data;
     }
+
 
 })(window);
