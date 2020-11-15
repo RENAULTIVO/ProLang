@@ -5,11 +5,6 @@
     let operators = ['>', '<', '>>', '<<', '=', ':', '+', '-', '*', '/', '!', '%'];
     let invalidNameCharacters = ['\\', ']', '[', '@', '{', '}', '|', '#', '(', ')', ' ', '$', '"', "'", ',', '\n'];
 
-    let operatorActions = {
-        '=': 'equal',
-        ':': 'equal',
-    };
-
     function run() {
         
 
@@ -114,6 +109,7 @@
             }
             
             for (; i<string.length && string[i] != '{'; i++);
+            i++;
 
             let contextCounter = 0;
 
@@ -145,53 +141,59 @@
             if (string[i] == '$') {
 
                 commandList.push({
-                    isVariable: true,
+                    type: 'variable',
                     name: getVariableName()
                 });
 
             } else if (string[i] == '"' || string[i] == "'") {
 
                 commandList.push({
-                    isString: true,
+                    type: 'string',
                     value: getString()
                 })
 
             } else if (operators.indexOf(string[i]) != -1) {
 
                 commandList.push({
-                    isOperator: true,
+                    type: 'operator',
                     operator: string[i]
                 });
 
             } else if (!isNaN(parseFloat(string[i], 10))) {
 
                 commandList.push({
-                    isNumber: true,
+                    type: 'number',
                     value: getNumber()
-                })
+                });
 
             } else if (string[i] == '@') {
 
                 let functionData = getFunction();
 
                 commandList.push({
-                    isFunction: true,
+                    type: 'function',
                     name: functionData.name,
                     params: functionData.params,
                     commands: functionData.commands
+                });
+
+            } else if (string[i] == '\n') {
+                
+                commandList.push({
+                    type: 'breakLine'
                 });
 
             }
 
         }
 
-        console.log(commandList);
         return commandList;
 
     }
 
     ProLang.compile = (string) => {
-        parser(string);
+        let commandList = parser(string);
+        console.log(window.ProLang.JavaScript.parser(commandList));
     }
 
     window.ProLang = {
