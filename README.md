@@ -16,7 +16,6 @@
 
 ```Swift
 
-@myState : String = "Initial Value";
 $myVariable : String = "my text :)";
 
 function helloWorld : Void ($text : String) {
@@ -28,7 +27,6 @@ function helloWorld : Void ($text : String) {
 - Java Output:
 
 ```Java
-String myState_STATE  = "Initial Value";
 String myVariable  = "my text :)";
 
 void helloWorld(String text) {
@@ -39,7 +37,6 @@ void helloWorld(String text) {
 - Swift Output
 
 ```Swift
-@State var myState_STATE : String  = "Initial Value";
 var myVariable : String  = "my text :)";
 
 func helloWorld(text : String ) -> Void {
