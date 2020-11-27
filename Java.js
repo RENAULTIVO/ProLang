@@ -1,5 +1,18 @@
 (() => {
 
+    // temporary
+    let onCreate = `
+  // Inserted by ProLang
+  LinearLayout contentView;
+
+  @Override
+  public void onCreate(Bundle bundle) {
+    super.onCreate(bundle);
+    contentView = new LinearLayout(this);
+    setContentView(contentView);
+  }
+    `;
+
     let types = {
         'String': 'String',
         'Int': 'int',
@@ -8,11 +21,20 @@
         'Float': 'float'
     }
 
+    let platformExtends = {
+        'screen': {
+            class: 'Activity',
+            import: 'android.app.Activity'
+        }
+    }
+
     let platformFunctions = {
         terminal: (params) => {
             return `System.out.println(${parseFunctionCallParams(params)})`;
         }
     }
+
+    let imports = new Array();
 
     function parseCommandData(command) {
 
@@ -66,10 +88,18 @@
 
         for (let i=0; i<commands.length; i++) {
 
-            if (commands[i].type == 'variable'
+            if (commands[i].type == 'screen') {
+
+                if (imports.indexOf(platformExtends.screen.import) == -1) {
+                    imports.push(platformExtends.screen.import);
+                }
+
+                finalCode += `class ${commands[i].name} extends ${platformExtends.screen.class} {${parser(commands[i].instructions, identation + '  ')}${onCreate}\n}`;
+
+            } else if (commands[i].type == 'variable'
             || commands[i].type == 'state') {
 
-                finalCode += `${parseDataDeclaration(commands[i])} `;
+                finalCode += `${identation}${parseDataDeclaration(commands[i])}`;
 
             }  else if (commands[i].type == 'operator') {
 
@@ -81,9 +111,11 @@
 
             } else if (commands[i].type == 'function') {
 
-                finalCode += `${types[commands[i].dataType]} ${commands[i].name}(${parseFunctionParams(commands[i].params)}) {${identation}${parser(commands[i].instructions, identation + '  ')}${identation}\n}`;
+                finalCode += `${identation}${types[commands[i].dataType]} ${commands[i].name}(${parseFunctionParams(commands[i].params)}) {${identation}${parser(commands[i].instructions, identation + '  ')}${identation}}`;
 
-            } else if (commands[i].type == 'functionCall') {
+            } else if (commands[i].type == 'functionCall'
+            && commands[i].platform == 'all'
+            || commands[i].platform == 'android') {
                 
                 if (platformFunctions[commands[i].function]) {
 
@@ -93,13 +125,31 @@
                     finalCode += `${identation}${commands[i].function}(${parseFunctionCallParams(commands[i].params)})`;
                 }
 
+            } else if (commands[i].type == 'comment') {
+
+                finalCode += `${identation}/*${commands[i].comment}*/\n`;
+
             } else if (commands[i].type == 'semicolon') {
+
+                if (typeof commands[i-1].platform != 'undefined'
+                    && commands[i-1].platform != 'all'
+                    && commands[i-1].platform != 'android') {
+                    continue;
+                }
 
                 finalCode += `;`;
 
             } else if (commands[i].type == 'breakline') {
 
-                finalCode += `\n${identation}`;
+                if (typeof commands[i-1] != 'undefined') {
+                    if (typeof commands[i-1].platform != 'undefined'
+                        && commands[i-1].platform != 'all'
+                        && commands[i-1].platform != 'android') {
+                        continue;
+                    }
+                }
+
+                finalCode += `\n`;
 
             }
 
@@ -109,8 +159,31 @@
 
     }
 
+    function mountImpors() {
+
+        let importList = '';
+
+        for (let i=0; i<imports.length; i++) {
+            importList += `import ${imports[i]};\n`;
+        }
+
+        return importList;
+
+    }
+
+    function parseAll(string) {
+
+        let finalCode = parser(string);
+        let importList = mountImpors();
+
+        finalCode = importList + '\n' + finalCode;
+
+        return finalCode;
+
+    }
+
     window.Java = {
-        parser: parser
+        parser: parseAll
     }
 
 })(window);

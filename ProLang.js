@@ -1,6 +1,8 @@
 (() => {
 
-    let validChars = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
+    let platforms = ['android', 'ios'];
+
+    let validChars = ['.', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
 
     let operators = ['=', '+', '-', '*', '/', '<', '>', '|', '&'];
 
@@ -44,7 +46,11 @@
 
         let i;
 
-        for (i=initialIndex; i<string.length; i++) {
+        // remove empty spaces
+        for (i=initialIndex; i<string.length
+            && validChars.indexOf(string[i].toLowerCase()) == -1; i++);
+
+        for (; i<string.length; i++) {
 
             if (validChars.indexOf(string[i].toLowerCase()) == -1) {
                 break;
@@ -110,9 +116,7 @@
 
             params += string[i];
 
-        }
-
-        console.log(params);
+        }   
 
         params = parser(params);
 
@@ -209,7 +213,57 @@
 
         for (let i=0; i<string.length; i++) {
 
-            if (string[i] == '"'
+            if (currentString.trim().toLowerCase() == 'screen') {
+
+                let name = getNextName(string, i-1);
+                let instructions = getNextCurlyBracket(string, name.finalIndex);
+
+                i = instructions.finalIndex;
+
+                commands.push({
+                    type: 'screen',
+                    name: name.name,
+                    instructions: parser(instructions.instructions)
+                });
+
+                currentString = '';
+
+            } else if (currentString.trim().toLowerCase() == 'function') {
+
+                let name = getNextName(string, i-1);
+                let params = getNextFunctionParams(string, name.finalIndex);
+                let instructions = getNextCurlyBracket(string, params.finalIndex);
+
+                i = instructions.finalIndex;
+
+                commands.push({
+                    type: 'function',
+                    name: name.name,
+                    dataType: name.type,
+                    params: params.params,
+                    platform: 'all',
+                    instructions: parser(instructions.instructions)
+                });
+
+                currentString = '';
+
+            } else if ( platforms.indexOf(currentString.trim().toLowerCase()) != -1
+                && string[i] == ':') {
+
+                let name = getNextName(string, i);
+                let functionParams = getNextFunctionParams(string, name.finalIndex);
+                i = functionParams.finalIndex;
+
+                commands.push({
+                    type: 'functionCall',
+                    params: functionParams.params,
+                    platform: currentString.trim().toLowerCase(),
+                    function: name.name
+                });
+    
+                currentString = '';
+
+            }  else if (string[i] == '"'
             || string[i] == "'") {
                 
                 let stringValue = getNextString(string, i);
@@ -288,6 +342,7 @@
                 commands.push({
                     type: 'functionCall',
                     params: functionParams.params,
+                    platform: 'all',
                     function: currentString.trim()
                 });
 
@@ -299,25 +354,7 @@
                     type: 'breakline'
                 });
 
-            } else if (currentString.trim() == 'function') {
-
-                let name = getNextName(string, i);
-                let params = getNextFunctionParams(string, name.finalIndex);
-                let instructions = getNextCurlyBracket(string, params.finalIndex);
-
-                i = instructions.finalIndex;
-
-                commands.push({
-                    type: 'function',
-                    name: name.name,
-                    dataType: name.type,
-                    params: params.params,
-                    instructions: parser(instructions.instructions)
-                });
-
-                currentString = '';
-
-            } else {
+            }  else {
                 currentString += string[i];
             }
 
@@ -331,7 +368,7 @@
 
         let parseData = parser(string);
 
-        //console.log(parser(string));
+        console.log(parser(string));
         console.log('----- swift ------');
         console.log(SwiftUI.parser(parseData));
         console.log('\n\n----- java ------');

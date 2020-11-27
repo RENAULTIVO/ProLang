@@ -1,5 +1,13 @@
 (() => {
 
+  // temporary
+  let onCreate = `
+  var body: some View {
+    Text("Empty Screen");
+  }
+  `;
+  
+
     let types = {
         'String': 'String',
         'Int': 'Int',
@@ -13,6 +21,8 @@
             return `print(${parseFunctionCallParams(params)})`;
         }
     }
+
+    let imports = ['SwiftUI'];
 
     function parseCommandData(command) {
 
@@ -66,10 +76,14 @@
 
         for (let i=0; i<commands.length; i++) {
 
-            if (commands[i].type == 'variable'
+            if (commands[i].type == 'screen') {
+
+                finalCode += `struct ${commands[i].name}: View {${parser(commands[i].instructions, identation + '  ')}${onCreate}\n}`;
+
+            } else if (commands[i].type == 'variable'
             || commands[i].type == 'state') {
 
-                finalCode += `${parseDataDeclaration(commands[i])} `;
+                finalCode += `${identation}${parseDataDeclaration(commands[i])}`;
 
             }  else if (commands[i].type == 'operator') {
 
@@ -81,9 +95,11 @@
 
             } else if (commands[i].type == 'function') {
 
-                finalCode += `func ${commands[i].name}(${parseFunctionParams(commands[i].params)}) -> ${commands[i].dataType} {${identation}${parser(commands[i].instructions, identation + '  ')}${identation}\n}`;
+                finalCode += `${identation}func ${commands[i].name}(${parseFunctionParams(commands[i].params)}) -> ${commands[i].dataType} {${identation}${parser(commands[i].instructions, identation + '  ')}\n${identation}}`;
 
-            } else if (commands[i].type == 'functionCall') {
+            } else if (commands[i].type == 'functionCall'
+                && commands[i].platform == 'all'
+                || commands[i].platform == 'ios') {
                 
                 if (platformFunctions[commands[i].function]) {
 
@@ -93,13 +109,31 @@
                     finalCode += `${identation}${commands[i].function}(${parseFunctionCallParams(commands[i].params)})`;
                 }
 
+            } else if (commands[i].type == 'comment') {
+
+                finalCode += `${identation}/*${commands[i].comment}*/\n`;
+
             } else if (commands[i].type == 'semicolon') {
+
+                if (typeof commands[i-1].platform != 'undefined'
+                    && commands[i-1].platform != 'all'
+                    && commands[i-1].platform != 'ios') {
+                    continue;
+                }
 
                 finalCode += `;`;
 
             } else if (commands[i].type == 'breakline') {
 
-                finalCode += `\n${identation}`;
+                if (typeof commands[i-1] != 'undefined') {
+                    if (typeof commands[i-1].platform != 'undefined'
+                        && commands[i-1].platform != 'all'
+                        && commands[i-1].platform != 'ios') {
+                        continue;
+                    }
+                }
+
+                finalCode += `\n`;
 
             }
 
@@ -109,8 +143,31 @@
 
     }
 
+    function mountImpors() {
+
+        let importList = '';
+
+        for (let i=0; i<imports.length; i++) {
+            importList += `import ${imports[i]};\n`;
+        }
+
+        return importList;
+
+    }
+
+    function parseAll(string) {
+
+        let finalCode = parser(string);
+        let importList = mountImpors();
+
+        finalCode = importList + '\n' + finalCode;
+
+        return finalCode;
+
+    }
+
     window.SwiftUI = {
-        parser: parser
+        parser: parseAll
     }
 
 })(window);
