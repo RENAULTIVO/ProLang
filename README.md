@@ -19,7 +19,7 @@
 Screen HomeScreen : Activity {
 
     // Variable example 
-    $variable : String = "Vamos ver";
+    $variable : String = "Text Example";
 
     // function example 
     function printMessage: Void ($mesage: String) {
@@ -39,7 +39,7 @@ import android.widget.LinearLayout;
 class HomeScreen extends Activity {
 
   /* Variable example */
-  String variable = "Vamos ver";
+  String variable = "Text Example";
 
   /* function example */
   void printMessage(String mesage) {  
@@ -67,7 +67,7 @@ import SwiftUI;
 struct HomeScreen: View {
 
   /* Variable example */
-  var variable : String = "Vamos ver";
+  var variable : String = "Text Example";
 
   /* function example */
   func printMessage(mesage : String ) -> Void {  
