@@ -34,7 +34,10 @@
         }
     }
 
-    let imports = new Array();
+    let imports = [
+        'android.app.Activity',
+        'android.widget.LinearLayout'
+    ];
 
     function parseCommandData(command) {
 

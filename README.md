@@ -13,35 +13,72 @@
 ### Example
 
 - Example code written in ProLang
-´´´SwiftUI
-@myState : String = "Initial Value";
-$myVariable : String = "my text :)";
 
-function helloWorld : Void ($text : String) {
-    terminal($text);
+```Swift
+
+Screen HomeScreen : Activity {
+
+    // Variable example 
+    $variable : String = "Vamos ver";
+
+    // function example 
+    function printMessage: Void ($mesage: String) {
+      terminal($message);
+    }
+
 }
 
-´´´
+```
 
 - Java Output:
 
 ```Java
-String myState_STATE  = "Initial Value";
-String myVariable  = "my text :)";
+import android.app.Activity;
+import android.widget.LinearLayout;
 
-void helloWorld(String text) {
-    System.out.println(text);
+class HomeScreen extends Activity {
+
+  /* Variable example */
+  String variable = "Vamos ver";
+
+  /* function example */
+  void printMessage(String mesage) {  
+    System.out.println(message);
+  }
+
+  // Inserted by ProLang
+  LinearLayout contentView;
+
+  @Override
+  public void onCreate(Bundle bundle) {
+    super.onCreate(bundle);
+    contentView = new LinearLayout(this);
+    setContentView(contentView);
+  }
+    
 }
 ```
 
 - Swift Output
 
 ```Swift
-@State var myState_STATE : String  = "Initial Value";
-var myVariable : String  = "my text :)";
+import SwiftUI;
 
-func helloWorld(text : String ) -> Void {
-    print(text);
+struct HomeScreen: View {
+
+  /* Variable example */
+  var variable : String = "Vamos ver";
+
+  /* function example */
+  func printMessage(mesage : String ) -> Void {  
+    print(message);
+
+  }
+
+  var body: some View {
+    Text("Empty Screen");
+  }
+  
 }
 ```
 
