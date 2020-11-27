@@ -10,8 +10,7 @@
     super.onCreate(bundle);
     contentView = new LinearLayout(this);
     setContentView(contentView);
-  }
-    `;
+  }`;
 
     let types = {
         'String': 'String',
@@ -36,6 +35,7 @@
 
     let imports = [
         'android.app.Activity',
+        'android.os.Bundle',
         'android.widget.LinearLayout'
     ];
 
@@ -97,7 +97,7 @@
                     imports.push(platformExtends.screen.import);
                 }
 
-                finalCode += `class ${commands[i].name} extends ${platformExtends.screen.class} {${parser(commands[i].instructions, identation + '  ')}${onCreate}\n}`;
+                finalCode += `\nclass ${commands[i].name} extends ${platformExtends.screen.class} {\n${parser(commands[i].instructions, identation + '  ')}${onCreate}\n}`;
 
             } else if (commands[i].type == 'variable'
             || commands[i].type == 'state') {
@@ -114,7 +114,7 @@
 
             } else if (commands[i].type == 'function') {
 
-                finalCode += `${identation}${types[commands[i].dataType]} ${commands[i].name}(${parseFunctionParams(commands[i].params)}) {${identation}${parser(commands[i].instructions, identation + '  ')}${identation}}`;
+                finalCode += `\n${identation}${types[commands[i].dataType]} ${commands[i].name}(${parseFunctionParams(commands[i].params)}) {${identation}${parser(commands[i].instructions, identation + '  ')}${identation}}`;
 
             } else if (commands[i].type == 'functionCall'
             && commands[i].platform == 'all'

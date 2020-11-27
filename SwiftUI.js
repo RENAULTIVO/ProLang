@@ -4,8 +4,7 @@
   let onCreate = `
   var body: some View {
     Text("Empty Screen");
-  }
-  `;
+  }`;
   
 
     let types = {
@@ -78,7 +77,7 @@
 
             if (commands[i].type == 'screen') {
 
-                finalCode += `struct ${commands[i].name}: View {${parser(commands[i].instructions, identation + '  ')}${onCreate}\n}`;
+                finalCode += `\nstruct ${commands[i].name}: View {${parser(commands[i].instructions, identation + '  ')}\n${onCreate}\n}`;
 
             } else if (commands[i].type == 'variable'
             || commands[i].type == 'state') {
@@ -95,7 +94,7 @@
 
             } else if (commands[i].type == 'function') {
 
-                finalCode += `${identation}func ${commands[i].name}(${parseFunctionParams(commands[i].params)}) -> ${commands[i].dataType} {${identation}${parser(commands[i].instructions, identation + '  ')}\n${identation}}`;
+                finalCode += `\n${identation}func ${commands[i].name}(${parseFunctionParams(commands[i].params)}) -> ${commands[i].dataType} {${identation}${parser(commands[i].instructions, identation + '  ')}\n${identation}}`;
 
             } else if (commands[i].type == 'functionCall'
                 && commands[i].platform == 'all'

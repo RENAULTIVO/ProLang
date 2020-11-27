@@ -145,11 +145,11 @@
                 contextCounter--;
             }
 
+            instructions += string[i];
+            
             if (contextCounter == 0) {
                 break;
             }
-
-            instructions += string[i];
 
         }
 
