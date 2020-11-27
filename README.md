@@ -1,5 +1,5 @@
 # ProLang
-### This is a language inspired by many others, but the main inspirations are Swift and Java.
+### This is a language inspired by many others, Swift and Java are the main inspirations, followed by JavaScript and PHP.
 
 - A General-purpose script programming language that focuses on performance and readability
 - Can be Compiled, Transpiled or Interpreted
