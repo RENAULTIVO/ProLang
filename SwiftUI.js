@@ -1,10 +1,11 @@
 (() => {
 
   // temporary
-  let onCreate = `
+  let onCreate = `  // Inserted by ProLang
   var body: some View {
     Text("Empty Screen");
-  }`;
+  }
+  `;
   
 
     let types = {
@@ -62,10 +63,10 @@
         let functionCallParams = '';
 
         for (let i=0; i<params.length; i++) {
-            functionCallParams += `${parseCommandData(params[i])} : ${params[i].dataType} ,`;
+            functionCallParams += `${parseCommandData(params[i])}: ${params[i].dataType}, `;
         }
 
-        return functionCallParams.substring(0, functionCallParams.length-1);
+        return functionCallParams.substring(0, functionCallParams.length-2);
 
     }
 
@@ -82,7 +83,11 @@
             } else if (commands[i].type == 'variable'
             || commands[i].type == 'state') {
 
-                finalCode += `${identation}${parseDataDeclaration(commands[i])}`;
+                if (commands[i].dataType != '') {
+                    finalCode += `${identation}${parseDataDeclaration(commands[i])}`;
+                } else {
+                    finalCode += `${commands[i].name}`;
+                }
 
             }  else if (commands[i].type == 'operator') {
 
@@ -91,6 +96,10 @@
             } else if (commands[i].type == 'string') {
 
                 finalCode += `"${commands[i].value}"`;
+
+            } else if (commands[i].type == 'number') {
+
+                finalCode += `${commands[i].value}`;
 
             } else if (commands[i].type == 'function') {
 

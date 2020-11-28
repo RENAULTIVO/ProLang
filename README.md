@@ -85,17 +85,17 @@ struct HomeScreen: View {
 ## Lexical error free
 - The code below works (not recommended at all) as the first example. The parser just allows these errors to save your time. Fix your errors when you find them.
 
-### Note that the parser tries to copy your break lines (to organize the final code in a similar way), when you do not use break lines and indentation, the code generated will have less break lines (but still a working code).
+### Note that the parser tries to copy your break lines (to organize the final code in a similar way that original code did), when you do not use break lines and correct indentation the generated code will have less break lines and a bad identation (but still a working code).
 
 ```Swift
 ScreenHomeScreen:Activity{$variable:String="Text Example";functionprintMessage:Void($mesage:String){terminal($message);}}
 ```
 
-## Platform compiled code
+## Platform transpiled code
 
 Platform | Generated Code
 -------- | --------------
-AVR|AVR Assembly
+AVR | AVR Assembly
 Android | Java
 iOS | SwiftUI
 Web | JavaScript
@@ -107,8 +107,13 @@ Desktop | NASM Assembly
 - [x] Data types
 - [x] Define and use variables
 - [x] Define and use functions
-- [x] Indentation of generated code
+- [x] Allow specific platform function
+- [x] Copy break lines and original code identation
+- [x] Lexical error free
 - [x] Screens
+- [ ] Classes
+- [ ] View elements
+- [ ] States
 
 ## Main purpose
-- Build a script programming language capable of build kernel, Operational Systems, platform programs and WEB pages without any external dependency
+- Build a script programming language capable of build kernel, Operational Systems, platform programs and WEB pages without external dependencies.

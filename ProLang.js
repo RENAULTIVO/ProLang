@@ -2,7 +2,13 @@
 
     let platforms = ['android', 'ios'];
 
-    let validChars = ['.', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
+    let validChars = [
+        '.',
+        'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
+    ];
+
+    let breakCommandChars = [';', '-', '~', '"', "'"];
 
     let operators = ['=', '+', '-', '*', '/', '<', '>', '|', '&'];
 
@@ -48,9 +54,11 @@
 
         // remove empty spaces
         for (i=initialIndex; i<string.length
-            && validChars.indexOf(string[i].toLowerCase()) == -1; i++);
+            && validChars.indexOf(string[i].toLowerCase()) == -1
+            && breakCommandChars.indexOf(string[i]) == -1; i++);
 
-        for (; i<string.length; i++) {
+        for (; i<string.length
+            && breakCommandChars.indexOf(string[i]) == -1; i++) {
 
             if (validChars.indexOf(string[i].toLowerCase()) == -1) {
                 break;
@@ -60,25 +68,26 @@
 
         }
 
-        // verify if this is a variable/functino definition
+        // verify if this is a variable/function definition
         for (; i<string.length
             && validChars.indexOf(string[i].toLowerCase()) == -1
+            && breakCommandChars.indexOf(string[i]) == -1
             && string[i] != ':'; i++);
         
 
         if (string[i] == ':') {
             isDefinition =  true;
-        } else {
-            i--;
         }
 
         // go to type definition
         for (; i<string.length
             && isDefinition
-            && validChars.indexOf(string[i].toLowerCase()) == -1; i++);
+            && validChars.indexOf(string[i].toLowerCase()) == -1
+            && breakCommandChars.indexOf(string[i]) == -1; i++);
 
         for (; i<string.length
-            && isDefinition; i++) {
+            && isDefinition
+            && breakCommandChars.indexOf(string[i]) == -1; i++) {
 
             if (validChars.indexOf(string[i].toLowerCase()) == -1) {
                 break;
@@ -157,6 +166,28 @@
             instructions: instructions.substring(1, instructions.length-1),
             finalIndex: i
         };
+
+    }
+
+    function getNextNumber(string, initialIndex) {
+
+        let i = initialIndex;
+        let numberString = '';
+
+        for (; i<string.length; i++) {
+
+            if (isNaN(parseFloat(string[i], 10))) {
+                break;
+            }
+
+            numberString += string[i];
+
+        }
+
+        return {
+            number: parseFloat(numberString, 10),
+            finalIndex: i-1
+        }
 
     }
 
@@ -296,6 +327,8 @@
 
                 i = variable.finalIndex;
 
+                console.log(variable, string[i])
+
                 commands.push({
                     type: 'variable',
                     name: variable.name,
@@ -303,6 +336,16 @@
                 });
 
                 currentString = '';
+
+            } else if (!isNaN(parseFloat(string[i], 10))) {
+
+                let number = getNextNumber(string, i);
+                i = number.finalIndex;
+
+                commands.push({
+                    type: 'number',
+                    value: number.number
+                });
 
             } else if (string[i] == '/'
             && (string[i+1] == '/' || string[i+1] == '*')) {

@@ -1,8 +1,7 @@
 (() => {
 
     // temporary
-    let onCreate = `
-  // Inserted by ProLang
+    let onCreate = `  // Inserted by ProLang
   LinearLayout contentView;
 
   @Override
@@ -10,7 +9,8 @@
     super.onCreate(bundle);
     contentView = new LinearLayout(this);
     setContentView(contentView);
-  }`;
+  }
+  `;
 
     let types = {
         'String': 'String',
@@ -102,15 +102,23 @@
             } else if (commands[i].type == 'variable'
             || commands[i].type == 'state') {
 
-                finalCode += `${identation}${parseDataDeclaration(commands[i])}`;
+                if (commands[i].dataType != '') {
+                    finalCode += `${identation}${parseDataDeclaration(commands[i])}`;
+                } else {
+                    finalCode += `${commands[i].name}`;
+                }
 
-            }  else if (commands[i].type == 'operator') {
+            } else if (commands[i].type == 'operator') {
 
                 finalCode += ` ${commands[i].operator} `;
 
             } else if (commands[i].type == 'string') {
 
                 finalCode += `"${commands[i].value}"`;
+
+            } else if (commands[i].type == 'number') {
+
+                finalCode += `${commands[i].value}`;
 
             } else if (commands[i].type == 'function') {
 
