@@ -111,7 +111,7 @@ Desktop | NASM Assembly
 - [x] Copy break lines and original code identation
 - [x] Lexical error free
 - [x] Screens
-- [ ] Classes
+- [x] Classes
 - [ ] View elements
 - [ ] States
 

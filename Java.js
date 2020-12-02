@@ -99,6 +99,10 @@
 
                 finalCode += `\nclass ${commands[i].name} extends ${platformExtends.screen.class} {\n${parser(commands[i].instructions, identation + '  ')}${onCreate}\n}`;
 
+            } else if (commands[i].type == 'class') {
+
+                finalCode += `\nclass ${commands[i].name} {\n${parser(commands[i].instructions, identation + '  ')}\n}`;
+
             } else if (commands[i].type == 'variable'
             || commands[i].type == 'state') {
 

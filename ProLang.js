@@ -72,7 +72,8 @@
         for (; i<string.length
             && validChars.indexOf(string[i].toLowerCase()) == -1
             && breakCommandChars.indexOf(string[i]) == -1
-            && string[i] != ':'; i++);
+            && string[i] != ':'
+            && string[i] != '{'; i++);
         
 
         if (string[i] == ':') {
@@ -244,7 +245,8 @@
 
         for (let i=0; i<string.length; i++) {
 
-            if (currentString.trim().toLowerCase() == 'screen') {
+            if (currentString.trim().toLowerCase() == 'screen'
+            || currentString.trim().toLowerCase() == 'class') {
 
                 let name = getNextName(string, i-1);
                 let instructions = getNextCurlyBracket(string, name.finalIndex);
@@ -252,7 +254,7 @@
                 i = instructions.finalIndex;
 
                 commands.push({
-                    type: 'screen',
+                    type: currentString.trim().toLowerCase(),
                     name: name.name,
                     instructions: parser(instructions.instructions)
                 });
